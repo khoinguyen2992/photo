@@ -12,6 +12,7 @@ This is a server of the Golang test app. It makes sure appropriate application l
 *  cd photo
 * export GOPATH=$PWD
 * go install photo/cmd/photo-server
+* node res/load.js res/createDatabase.js
 
 #References
 * Architecture - [grox](https://github.com/golang-vietnam/grox)
