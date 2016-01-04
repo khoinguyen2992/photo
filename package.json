@@ -1,0 +1,8 @@
+{
+  "name": "photo",
+  "devDependencies": {
+    "babel": "^5.4.3",
+    "minimist": "^1.1.1",
+    "rethinkdb": "^2.0.0"
+  }
+}
