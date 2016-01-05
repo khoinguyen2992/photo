@@ -47,7 +47,7 @@ func (this *CommentCtrl) ListByTags(w http.ResponseWriter, r *http.Request) {
 		cond := text.ToArray(text.Normalize(tags), ",")
 
 		searchValue = xhttp.MakeSearchValue(cond, keywords)
-
+		l.Println(searchValue)
 		if len(searchValue) == 0 {
 			l.Println("List", r.URL, "No keywords matched")
 			xhttp.ResponseList(w, http.StatusOK, []interface{}{}, pagingReponse, 0)
@@ -83,7 +83,8 @@ func (this *CommentCtrl) ListByTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if comments == nil {
-		comments = []*domain.Comment{}
+		xhttp.ResponseList(w, http.StatusOK, []*domain.Photo{}, pagingReponse, 0)
+		return
 	}
 
 	photoIds := make([]string, 0)

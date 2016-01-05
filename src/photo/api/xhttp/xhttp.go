@@ -51,7 +51,6 @@ func MakeSearchValue(conds []string, keywords []string) []string {
 		}
 		tower[i] = text.Deduplicate(tower[i])
 	}
-
 	res = MakeStringRe("", 0, tower)
 
 	return text.Deduplicate(res)
@@ -82,7 +81,6 @@ func MakeStringRe(text string, index int, texts [][]string) []string {
 			res = append(res, tmp)
 		}
 	}
-
 	return res
 }
 
