@@ -9,7 +9,6 @@ import (
 	"photo/stores"
 	"photo/utils/logs"
 	"photo/utils/text"
-	"strings"
 
 	"github.com/dancannon/gorethink"
 )
@@ -40,7 +39,6 @@ func (this *CommentCtrl) ListByTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	word := ""
 	searchValue := make([]string, 0)
 
 	if tags != "" {
@@ -50,23 +48,19 @@ func (this *CommentCtrl) ListByTags(w http.ResponseWriter, r *http.Request) {
 		l.Println(searchValue)
 		if len(searchValue) == 0 {
 			l.Println("List", r.URL, "No keywords matched")
-			xhttp.ResponseList(w, http.StatusOK, []interface{}{}, pagingReponse, 0)
+			xhttp.ResponseList(w, http.StatusOK, []*domain.Photo{}, pagingReponse, 0)
 			return
-		}
-
-		if len(searchValue) > 0 && len(cond) > 1 {
-			word = strings.Split(searchValue[0], ",")[0]
 		}
 	}
 
 	cond := func(comment gorethink.Term) gorethink.Term {
 		origin := comment
 		if tags != "" {
-			values := text.StringToInterfaceArray(text.ToArray(searchValue[0], ","))
-			commentTag := origin.Field(stores.KIndexCommentByTags).Contains(values...)
+			values := text.StringToInterfaceArray(searchValue)[0]
+			commentTag := origin.Field(stores.KIndexCommentByTags).Contains(values)
 			for i := 0; i < len(searchValue); i++ {
-				values := text.StringToInterfaceArray(text.ToArray(searchValue[i], ","))
-				commentTag = commentTag.Or(origin.Field(stores.KIndexCommentByTags).Contains(values...))
+				values := text.StringToInterfaceArray(searchValue)[i]
+				commentTag = commentTag.Or(origin.Field(stores.KIndexCommentByTags).Contains(values))
 			}
 
 			comment = comment.And(commentTag)
@@ -74,7 +68,7 @@ func (this *CommentCtrl) ListByTags(w http.ResponseWriter, r *http.Request) {
 		return comment
 	}
 
-	comments, err := this.commentStore.List(stores.KIndexCommentByPhotoId, word, cond, pagingReponse)
+	comments, err := this.commentStore.List(stores.KIndexCommentByPhotoId, "", cond, pagingReponse)
 
 	if err != nil {
 		l.Println("ListByTags", r.URL, err)

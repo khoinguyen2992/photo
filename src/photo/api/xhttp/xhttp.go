@@ -33,8 +33,6 @@ func ParseJsonBody(r *http.Request, v interface{}) error {
 
 func MakeSearchValue(conds []string, keywords []string) []string {
 	res := make([]string, 0)
-	tower := make([][]string, len(conds))
-
 	for i := range conds {
 		r, err := regexp.Compile("^" + conds[i])
 
@@ -43,45 +41,13 @@ func MakeSearchValue(conds []string, keywords []string) []string {
 			return res
 		}
 
-		tower[i] = make([]string, 0)
 		for j := range keywords {
 			if r.MatchString(keywords[j]) {
-				tower[i] = append(tower[i], keywords[j])
+				res = append(res, keywords[j])
 			}
 		}
-		tower[i] = text.Deduplicate(tower[i])
 	}
-	res = MakeStringRe("", 0, tower)
-
 	return text.Deduplicate(res)
-}
-
-func MakeStringRe(text string, index int, texts [][]string) []string {
-	res := make([]string, 0)
-	if len(texts)-1 > index {
-		for i := range texts[index] {
-			tmp := text
-			if tmp != "" {
-				tmp = text + "," + texts[index][i]
-			} else {
-				tmp = texts[index][i]
-			}
-			res = append(res, MakeStringRe(tmp, index+1, texts)...)
-		}
-	}
-
-	for i := range texts[index] {
-		if index == len(texts)-1 {
-			tmp := text
-			if tmp != "" {
-				tmp = text + "," + texts[index][i]
-			} else {
-				tmp = texts[index][i]
-			}
-			res = append(res, tmp)
-		}
-	}
-	return res
 }
 
 type PagingQuery struct {
